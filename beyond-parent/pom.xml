@@ -217,5 +217,6 @@
   <modules>
     <module>beyond</module>
     <module>beyond-chat</module>
+    <module>beyond-redis</module>
   </modules>
 </project>
