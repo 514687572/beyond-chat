@@ -1,4 +1,4 @@
-package com.beyond.net;
+package com.beyond.net.controller;
 
 import java.util.Date;
 import java.util.HashMap;
