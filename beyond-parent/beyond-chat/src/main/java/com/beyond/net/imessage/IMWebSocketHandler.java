@@ -51,23 +51,6 @@ public class IMWebSocketHandler implements WebSocketHandler {
 				userSocketSessionMap.put(uid, session);
 			}
 			
-			final AbstractWebSocketSession sessions = (AbstractWebSocketSession)userSocketSessionMap.get(uid);
-			new Thread(new Runnable() {
-	            public void run() {
-	            	while(sessions.isOpen()){
-	            		try {
-	            			Thread.sleep(1000 * 5);
-	            		} catch (InterruptedException e) {
-	            			e.printStackTrace();
-	            		}
-	            		try {
-	            			sessions.sendMessage(new PingMessage());
-	            		} catch (IOException e) {
-	            			Thread.currentThread().stop();
-	            		}
-	            	}
-	            }
-	        }).start();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
