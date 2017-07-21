@@ -30,7 +30,8 @@ public class RedisService {
 		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
 			@Override
 			public Boolean doInRedis(RedisConnection connection)throws DataAccessException {
-				return connection.setNX(bkey, bvalue);
+				connection.set(bkey, bvalue);
+				return true;
 			}
 		});
 		return result;
