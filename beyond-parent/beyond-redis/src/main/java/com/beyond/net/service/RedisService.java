@@ -5,13 +5,14 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 import com.beyond.net.utils.SerializerUtil;
 
+@Service
 public class RedisService {
 	public final static String CAHCENAME = "niitcache";// 缓存名
 	public final static int CAHCETIME = 60;// 默认缓存时间 60S
@@ -28,22 +29,19 @@ public class RedisService {
 		final byte[] bvalue = SerializerUtil.serialize(obj);
 		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
 			@Override
-			public Boolean doInRedis(RedisConnection connection)
-					throws DataAccessException {
+			public Boolean doInRedis(RedisConnection connection)throws DataAccessException {
 				return connection.setNX(bkey, bvalue);
 			}
 		});
 		return result;
 	}
 
-	public <T> void putCacheWithExpireTime(String key, T obj,
-			final long expireTime) {
+	public <T> void putCacheWithExpireTime(String key, T obj,final long expireTime) {
 		final byte[] bkey = key.getBytes();
 		final byte[] bvalue = SerializerUtil.serialize(obj);
 		redisTemplate.execute(new RedisCallback<Boolean>() {
 			@Override
-			public Boolean doInRedis(RedisConnection connection)
-					throws DataAccessException {
+			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
 				connection.setEx(bkey, expireTime, bvalue);
 				return true;
 			}
@@ -55,8 +53,7 @@ public class RedisService {
 		final byte[] bvalue = SerializerUtil.serialize(objList);
 		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
 			@Override
-			public Boolean doInRedis(RedisConnection connection)
-					throws DataAccessException {
+			public Boolean doInRedis(RedisConnection connection)throws DataAccessException {
 				return connection.setNX(bkey, bvalue);
 			}
 		});
@@ -69,8 +66,7 @@ public class RedisService {
 		final byte[] bvalue = SerializerUtil.serialize(objList);
 		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
 			@Override
-			public Boolean doInRedis(RedisConnection connection)
-					throws DataAccessException {
+			public Boolean doInRedis(RedisConnection connection)throws DataAccessException {
 				connection.setEx(bkey, expireTime, bvalue);
 				return true;
 			}
