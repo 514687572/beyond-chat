@@ -8,9 +8,9 @@
     <version>1.0</version>
   </parent>
   <groupId>com.beyond.net</groupId>
-  <artifactId>beyond-redis</artifactId>
+  <artifactId>beyond-chat</artifactId>
   <version>1.0</version>
-  <name>beyond-redis</name>
+  <name>beyond-chat</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

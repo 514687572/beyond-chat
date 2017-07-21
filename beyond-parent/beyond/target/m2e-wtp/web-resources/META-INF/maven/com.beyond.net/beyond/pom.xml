@@ -14,15 +14,21 @@
 	<packaging>war</packaging>
 	<name>beyond Maven Webapp</name>
 	<url>http://maven.apache.org</url>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>com.beyond.net</groupId>
 			<artifactId>beyond-chat</artifactId>
 			<version>1.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.beyond.net</groupId>
+			<artifactId>beyond-redis</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<finalName>beyond</finalName>
 	</build>
