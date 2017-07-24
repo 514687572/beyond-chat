@@ -138,6 +138,9 @@ input[type=button] {
 	var from = uid;
 	var fromName = generateMixed(6);
 	var websocket;
+	
+	
+	$("#chatName")[0].innerHTML=from;
 
 	function generateMixed(n) {
 	     var res = "";
@@ -236,7 +239,7 @@ input[type=button] {
 </script>
 </head>
 <body>
-	欢迎：${sessionScope.name }
+	欢迎：<div id="chatName"></div>
 	<div id="content"></div>
 	<input type="text" placeholder="请输入要发送的信息" id="msg" class="msg" onkeydown="send(event)">
 	<input type="button" value="发送" class="send" onclick="sendMsg()">
