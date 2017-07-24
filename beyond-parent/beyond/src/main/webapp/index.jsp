@@ -139,9 +139,6 @@ input[type=button] {
 	var fromName = generateMixed(6);
 	var websocket;
 	
-	
-	$("#chatName")[0].innerHTML=from;
-
 	function generateMixed(n) {
 	     var res = "";
 	     for(var i = 0; i < n ; i ++) {
