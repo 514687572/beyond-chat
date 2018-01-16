@@ -30,7 +30,6 @@ import com.google.gson.GsonBuilder;
  * @Date 2016年1月11日 下午1:19:50
  */
 @Component
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = { RuntimeException.class, Exception.class })
 public class IMWebSocketHandler implements WebSocketHandler {
 	public static final Map<String, WebSocketSession> userSocketSessionMap;
 
