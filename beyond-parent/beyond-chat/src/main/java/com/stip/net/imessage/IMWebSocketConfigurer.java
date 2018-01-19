@@ -1,4 +1,4 @@
-package com.beyond.net.imessage;
+package com.stip.net.imessage;
 
 import javax.annotation.Resource;
 
