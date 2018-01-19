@@ -25,7 +25,7 @@ import com.stip.net.vo.Message;
 @Scope("request")
 @RequestMapping("/msg")
 @RestController
-public class MsgTestController {
+public class MsgController {
 	@Resource
 	private RedisService redisService;
 	@Resource

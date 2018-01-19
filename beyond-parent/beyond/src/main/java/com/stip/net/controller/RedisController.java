@@ -18,7 +18,7 @@ import com.stip.net.service.RedisService;
 @Scope("request")
 @RequestMapping("/test")
 @RestController
-public class TestController {
+public class RedisController {
 	@Resource
 	private RedisService redisService;
 	
