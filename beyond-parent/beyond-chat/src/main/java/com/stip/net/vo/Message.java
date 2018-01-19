@@ -1,4 +1,4 @@
-package com.beyond.net.vo;
+package com.stip.net.vo;
 
 import java.util.Date;
 

@@ -19,9 +19,9 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.adapter.AbstractWebSocketSession;
 
-import com.beyond.net.vo.Message;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.stip.net.vo.Message;
 
 /**
  * Socket处理器
