@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.socket.TextMessage;
 
-import com.beyond.net.imessage.IMWebSocketHandler;
-import com.beyond.net.service.RedisService;
-import com.beyond.net.vo.Message;
 import com.google.gson.GsonBuilder;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.service.RedisService;
+import com.stip.net.vo.Message;
 
 @Scope("request")
 @RequestMapping("/msg")

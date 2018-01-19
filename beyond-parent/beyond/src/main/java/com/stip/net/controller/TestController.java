@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.beyond.net.service.RedisService;
+import com.stip.net.service.RedisService;
 
 @Scope("request")
 @RequestMapping("/test")
