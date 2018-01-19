@@ -22,7 +22,7 @@ public class RedisController {
 	@Resource
 	private RedisService redisService;
 	
-	@RequestMapping(value = "/updateVistiTime.do", method = { RequestMethod.PUT,RequestMethod.GET})
+	@RequestMapping(value = "/updateVistiTime.do", method = { RequestMethod.PUT})
 	public Map<String,Object> updateVistiTime(HttpServletRequest request, HttpServletResponse response){
 		Map<String,Object> jsonResult=new HashMap<String, Object>();
 		

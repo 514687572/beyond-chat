@@ -31,7 +31,7 @@ public class MsgController {
 	@Resource
 	private IMWebSocketHandler handler;
 	
-	@RequestMapping(value = "/talk.do", method = { RequestMethod.PUT,RequestMethod.GET})
+	@RequestMapping(value = "/talk.do", method = { RequestMethod.PUT})
 	public ModelAndView talk(HttpServletRequest request, HttpServletResponse response){
 		Map<String,Object> jsonResult=new HashMap<String, Object>();
 		String name=request.getParameter("name");
