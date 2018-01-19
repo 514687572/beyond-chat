@@ -3,8 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
-	xsi:schemaLocation="  
-        http://www.springframework.org/schema/beans   
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
         http://www.springframework.org/schema/mvc   
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd  
@@ -16,9 +15,6 @@
       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 	default-autowire="byName">
 
-	<!-- redis配置文件 -->
-	<context:property-placeholder location="classpath:/redis.properties"
-		ignore-unresolvable="true" />
 	<!-- redis连接池 -->
 	<bean id="jedisConfig" class="redis.clients.jedis.JedisPoolConfig">
 		<property name="maxTotal" value="${redis_max_total}"></property>
@@ -36,8 +32,7 @@
 	<!-- redis操作模板，这里采用尽量面向对象的模板 -->
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
 		<property name="connectionFactory" ref="jedisConnectionFactory" />
-		<!-- 如果不配置Serializer，那么存储的时候只能使用String，如果用对象类型存储，那么会提示错误 can't cast to 
-			String！！！ -->
+		<!-- 如果不配置Serializer，那么存储的时候只能使用String，如果用对象类型存储，那么会提示错误 can't cast to  String！！！ -->
 		<property name="keySerializer">
 			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
 		</property>
