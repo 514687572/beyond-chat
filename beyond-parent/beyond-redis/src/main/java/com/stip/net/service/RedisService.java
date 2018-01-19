@@ -1,4 +1,4 @@
-package com.beyond.net.service;
+package com.stip.net.service;
 
 import java.util.List;
 import java.util.Set;
@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.beyond.net.utils.SerializerUtil;
+import com.stip.net.utils.SerializerUtil;
 
 @Service
 public class RedisService {

@@ -1,4 +1,4 @@
-package com.beyond.net.utils;
+package com.stip.net.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
