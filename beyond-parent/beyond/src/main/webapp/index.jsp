@@ -1,16 +1,11 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	String path = request.getContextPath();
-	String basePath = request.getServerName() + ":"
-			+ request.getServerPort() + path + "/";
-	String basePath2 = request.getScheme() + "://"
-			+ request.getServerName() + ":" + request.getServerPort()
-			+ path + "/";
+	String basePath = request.getServerName() + ":" + request.getServerPort() + path + "/";
+	String basePath2 = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title></title>
@@ -189,9 +184,9 @@ input[type=button] {
 				$("#content").append("<div class='tmsg'><label class='name'>我&nbsp;"+ new Date().Format("yyyy-MM-dd hh:mm:ss")
 								+ "</label><div class='tmsg_text'>" + data.text+ "</div></div>");
 				scrollToBottom();
-				$("#msg").val("");
 			}
 		});
+		$("#msg").val('');
 	}
 
 	function scrollToBottom() {
