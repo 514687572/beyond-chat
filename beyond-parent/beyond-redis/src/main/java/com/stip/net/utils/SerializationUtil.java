@@ -11,6 +11,11 @@ import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
+/**
+ * 序列化和反序列化工具
+ * @author cja
+ *
+ */
 public class SerializationUtil {
 	private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
 

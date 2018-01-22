@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.stip.net.utils.SerializerUtil;
+import com.stip.net.utils.SerializationUtil;
 
 @Service
 public class RedisService {
@@ -26,7 +26,7 @@ public class RedisService {
 
 	public <T> boolean putCache(String key, T obj) {
 		final byte[] bkey = key.getBytes();
-		final byte[] bvalue = SerializerUtil.serialize(obj);
+		final byte[] bvalue = SerializationUtil.serialize(obj);
 		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
 			@Override
 			public Boolean doInRedis(RedisConnection connection)throws DataAccessException {
@@ -39,7 +39,7 @@ public class RedisService {
 
 	public <T> void putCacheWithExpireTime(String key, T obj,final long expireTime) {
 		final byte[] bkey = key.getBytes();
-		final byte[] bvalue = SerializerUtil.serialize(obj);
+		final byte[] bvalue = SerializationUtil.serialize(obj);
 		redisTemplate.execute(new RedisCallback<Boolean>() {
 			@Override
 			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
@@ -51,7 +51,7 @@ public class RedisService {
 
 	public <T> boolean putListCache(String key, List<T> objList) {
 		final byte[] bkey = key.getBytes();
-		final byte[] bvalue = SerializerUtil.serialize(objList);
+		final byte[] bvalue = SerializationUtil.serialize(objList);
 		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
 			@Override
 			public Boolean doInRedis(RedisConnection connection)throws DataAccessException {
@@ -64,7 +64,7 @@ public class RedisService {
 	public <T> boolean putListCacheWithExpireTime(String key, List<T> objList,
 			final long expireTime) {
 		final byte[] bkey = key.getBytes();
-		final byte[] bvalue = SerializerUtil.serialize(objList);
+		final byte[] bvalue = SerializationUtil.serialize(objList);
 		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
 			@Override
 			public Boolean doInRedis(RedisConnection connection)throws DataAccessException {
@@ -78,15 +78,14 @@ public class RedisService {
 	public Object getCache(final String key, Class targetClass) {
 		byte[] result = redisTemplate.execute(new RedisCallback<byte[]>() {
 			@Override
-			public byte[] doInRedis(RedisConnection connection)
-					throws DataAccessException {
+			public byte[] doInRedis(RedisConnection connection) throws DataAccessException {
 				return connection.get(key.getBytes());
 			}
 		});
 		if (result == null) {
 			return null;
 		}
-		return SerializerUtil.deserialize(result);
+		return SerializationUtil.deserialize(result,targetClass);
 	}
 
 	public Object getListCache(final String key, Class targetClass) {
@@ -100,7 +99,7 @@ public class RedisService {
 		if (result == null) {
 			return null;
 		}
-		return SerializerUtil.deserialize(result, targetClass);
+		return SerializationUtil.deserialize(result, targetClass);
 	}
 
 	/**
