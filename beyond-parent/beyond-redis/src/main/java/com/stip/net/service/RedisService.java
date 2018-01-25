@@ -61,8 +61,7 @@ public class RedisService {
 		return result;
 	}
 
-	public <T> boolean putListCacheWithExpireTime(String key, List<T> objList,
-			final long expireTime) {
+	public <T> boolean putListCacheWithExpireTime(String key, List<T> objList, final long expireTime) {
 		final byte[] bkey = key.getBytes();
 		final byte[] bvalue = SerializationUtil.serialize(objList);
 		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
@@ -75,7 +74,7 @@ public class RedisService {
 		return result;
 	}
 
-	public Object getCache(final String key, Class targetClass) {
+	public <T> T getCache(final String key, Class<T> cls) {
 		byte[] result = redisTemplate.execute(new RedisCallback<byte[]>() {
 			@Override
 			public byte[] doInRedis(RedisConnection connection) throws DataAccessException {
@@ -85,7 +84,7 @@ public class RedisService {
 		if (result == null) {
 			return null;
 		}
-		return SerializationUtil.deserialize(result,targetClass);
+		return SerializationUtil.deserialize(result,cls);
 	}
 
 	public Object getListCache(final String key, Class targetClass) {
