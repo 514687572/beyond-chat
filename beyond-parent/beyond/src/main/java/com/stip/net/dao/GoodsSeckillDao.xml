@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.stip.net.dao.SeckillDao">
-  <resultMap id="BaseResultMap" type="com.stip.net.entity.Seckill">
-    <id column="seckill_seckill_id" jdbcType="BIGINT" property="seckillId" />
-    <result column="seckill_name" jdbcType="VARCHAR" property="name" />
-    <result column="seckill_number" jdbcType="INTEGER" property="number" />
-    <result column="seckill_create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="seckill_start_time" jdbcType="TIMESTAMP" property="startTime" />
-    <result column="seckill_end_time" jdbcType="TIMESTAMP" property="endTime" />
+<mapper namespace="com.stip.net.dao.GoodsSeckillDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.GoodsSeckill">
+    <id column="goodsSeckill_seckill_id" jdbcType="BIGINT" property="seckillId" />
+    <result column="goodsSeckill_name" jdbcType="VARCHAR" property="name" />
+    <result column="goodsSeckill_number" jdbcType="INTEGER" property="number" />
+    <result column="goodsSeckill_create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="goodsSeckill_start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="goodsSeckill_end_time" jdbcType="TIMESTAMP" property="endTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -68,17 +68,17 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    seckill.seckill_id as seckill_seckill_id, seckill.name as seckill_name, seckill.number as seckill_number, 
-    seckill.create_time as seckill_create_time, seckill.start_time as seckill_start_time, 
-    seckill.end_time as seckill_end_time
+    goodsSeckill.seckill_id as goodsSeckill_seckill_id, goodsSeckill.name as goodsSeckill_name, 
+    goodsSeckill.number as goodsSeckill_number, goodsSeckill.create_time as goodsSeckill_create_time, 
+    goodsSeckill.start_time as goodsSeckill_start_time, goodsSeckill.end_time as goodsSeckill_end_time
   </sql>
-  <select id="selectByExample" parameterType="com.stip.net.entity.SeckillExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.stip.net.entity.GoodsSeckillExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from seckill seckill
+    from goods_seckill goodsSeckill
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -92,29 +92,29 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from seckill seckill
-    where seckill.seckill_id = #{seckillId,jdbcType=BIGINT}
+    from goods_seckill goodsSeckill
+    where goodsSeckill.seckill_id = #{seckillId,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from seckill
+    delete from goods_seckill
     where seckill_id = #{seckillId,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="com.stip.net.entity.SeckillExample">
-    delete from seckill seckill
+  <delete id="deleteByExample" parameterType="com.stip.net.entity.GoodsSeckillExample">
+    delete from goods_seckill goodsSeckill
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.stip.net.entity.Seckill">
-    insert into seckill (seckill_id, name, number, 
+  <insert id="insert" parameterType="com.stip.net.entity.GoodsSeckill">
+    insert into goods_seckill (seckill_id, name, number, 
       create_time, start_time, end_time
       )
     values (#{seckillId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{number,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.stip.net.entity.Seckill">
-    insert into seckill
+  <insert id="insertSelective" parameterType="com.stip.net.entity.GoodsSeckill">
+    insert into goods_seckill
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="seckillId != null">
         seckill_id,
@@ -156,32 +156,32 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.stip.net.entity.SeckillExample" resultType="java.lang.Long">
-    select count(*) from seckill seckill
+  <select id="countByExample" parameterType="com.stip.net.entity.GoodsSeckillExample" resultType="java.lang.Long">
+    select count(*) from goods_seckill goodsSeckill
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update seckill seckill
+    update goods_seckill goodsSeckill
     <set>
       <if test="record.seckillId != null">
-        seckill.seckill_id = #{record.seckillId,jdbcType=BIGINT},
+        goodsSeckill.seckill_id = #{record.seckillId,jdbcType=BIGINT},
       </if>
       <if test="record.name != null">
-        seckill.name = #{record.name,jdbcType=VARCHAR},
+        goodsSeckill.name = #{record.name,jdbcType=VARCHAR},
       </if>
       <if test="record.number != null">
-        seckill.number = #{record.number,jdbcType=INTEGER},
+        goodsSeckill.number = #{record.number,jdbcType=INTEGER},
       </if>
       <if test="record.createTime != null">
-        seckill.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+        goodsSeckill.create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="record.startTime != null">
-        seckill.start_time = #{record.startTime,jdbcType=TIMESTAMP},
+        goodsSeckill.start_time = #{record.startTime,jdbcType=TIMESTAMP},
       </if>
       <if test="record.endTime != null">
-        seckill.end_time = #{record.endTime,jdbcType=TIMESTAMP},
+        goodsSeckill.end_time = #{record.endTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     <if test="_parameter != null">
@@ -189,19 +189,19 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update seckill seckill
-    set seckill.seckill_id = #{record.seckillId,jdbcType=BIGINT},
-      seckill.name = #{record.name,jdbcType=VARCHAR},
-      seckill.number = #{record.number,jdbcType=INTEGER},
-      seckill.create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      seckill.start_time = #{record.startTime,jdbcType=TIMESTAMP},
-      seckill.end_time = #{record.endTime,jdbcType=TIMESTAMP}
+    update goods_seckill goodsSeckill
+    set goodsSeckill.seckill_id = #{record.seckillId,jdbcType=BIGINT},
+      goodsSeckill.name = #{record.name,jdbcType=VARCHAR},
+      goodsSeckill.number = #{record.number,jdbcType=INTEGER},
+      goodsSeckill.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      goodsSeckill.start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      goodsSeckill.end_time = #{record.endTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.Seckill">
-    update seckill
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.GoodsSeckill">
+    update goods_seckill
     <set>
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
@@ -221,8 +221,8 @@
     </set>
     where seckill_id = #{seckillId,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.Seckill">
-    update seckill
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.GoodsSeckill">
+    update goods_seckill
     set name = #{name,jdbcType=VARCHAR},
       number = #{number,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},

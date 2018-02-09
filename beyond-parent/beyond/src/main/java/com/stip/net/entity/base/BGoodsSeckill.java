@@ -4,7 +4,7 @@ import com.stip.mybatis.generator.plugin.BaseModel;
 import java.io.Serializable;
 import java.util.Date;
 
-public class BSeckill extends BaseModel<Long> implements Serializable {
+public class BGoodsSeckill extends BaseModel<Long> implements Serializable {
     private Long seckillId;
 
     private String name;
@@ -95,7 +95,7 @@ public class BSeckill extends BaseModel<Long> implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        BSeckill other = (BSeckill) that;
+        BGoodsSeckill other = (BGoodsSeckill) that;
         return (this.getSeckillId() == null ? other.getSeckillId() == null : this.getSeckillId().equals(other.getSeckillId()));
     }
 
