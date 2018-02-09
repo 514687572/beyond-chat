@@ -1,13 +1,18 @@
 package com.stip.net.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Service;
 
 import com.stip.net.utils.SerializationUtil;
@@ -61,6 +66,13 @@ public class RedisService {
 		return result;
 	}
 
+	/**
+	 * 存入缓存并指定过期时间
+	 * @param key
+	 * @param objList
+	 * @param expireTime
+	 * @return
+	 */
 	public <T> boolean putListCacheWithExpireTime(String key, List<T> objList, final long expireTime) {
 		final byte[] bkey = key.getBytes();
 		final byte[] bvalue = SerializationUtil.serialize(objList);
@@ -81,13 +93,14 @@ public class RedisService {
 				return connection.get(key.getBytes());
 			}
 		});
+		System.out.println(result);
 		if (result == null) {
 			return null;
 		}
 		return SerializationUtil.deserialize(result,cls);
 	}
 
-	public Object getListCache(final String key, Class targetClass) {
+	public <T> T getListCache(final String key, Class<T> targetClass) {
 		byte[] result = redisTemplate.execute(new RedisCallback<byte[]>() {
 			@Override
 			public byte[] doInRedis(RedisConnection connection)
@@ -99,6 +112,18 @@ public class RedisService {
 			return null;
 		}
 		return SerializationUtil.deserialize(result, targetClass);
+	}
+	
+	/**
+	 * 执行lua脚本
+	 * 
+	 * @return
+	 */
+	public Long executeScript(String script,List<String> list,String[] args) {
+		RedisScript<Long> redisScript = new DefaultRedisScript<Long>(script, Long.class);
+		Long a = redisTemplate.execute(redisScript, list,args);
+
+		return a;
 	}
 
 	/**
