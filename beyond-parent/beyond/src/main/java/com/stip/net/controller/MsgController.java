@@ -40,7 +40,7 @@ public class MsgController {
 		request.getSession().setAttribute("uid",userId);
 		request.getSession().setAttribute("name",name);
 		
-		redisService.putCache("uid", new Date());
+		//redisService.putCache("uid", new Date());
 		
 		return new ModelAndView("redirect:/talk.jsp");
 	}

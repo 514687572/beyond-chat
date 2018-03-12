@@ -9,6 +9,7 @@
 		<param-value>
 		classpath:applicationContext.xml
 		classpath:spring-redis.xml
+		classpath:spring-threadPool.xml
 		</param-value>
 	</context-param>
 
