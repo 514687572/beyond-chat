@@ -27,6 +27,12 @@
 			<artifactId>beyond-redis</artifactId>
 			<version>1.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.beyond.net</groupId>
+			<artifactId>beyond-activemq</artifactId>
+			<version>1.0</version>
+		</dependency>
 
 	</dependencies>
 
