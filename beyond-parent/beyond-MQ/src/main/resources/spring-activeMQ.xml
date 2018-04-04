@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:amq="http://activemq.apache.org/schema/core"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/jms
+        http://www.springframework.org/schema/jms/spring-jms-4.1.xsd
+        http://activemq.apache.org/schema/core
+        http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd">
+
+	<bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="${activemq.host}" />
+		<property name="userName" value="${activemq.username}" />
+		<property name="password" value="${activemq.password}" />
+		<!-- <property name="optimizeAcknowledge" value="true" /> -->
+		<property name="alwaysSessionAsync" value="false" />
+		<property name="dispatchAsync" value="false" />
+		<property name="trustedPackages">
+			<list>
+				<value>java.lang</value>
+				<value>javax.security</value>
+				<value>java.util</value>
+				<value>org.apache.activemq</value>
+				<value>com.stip.net.pojo</value>
+				<value>com.stip.net.entity</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="connectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+		<property name="connectionFactory" ref="activeMQConnectionFactory"/>
+		<property name="maxConnections" value="1000" />
+	</bean>
+
+	<!-- 消息处理器 -->
+	<bean id="jmsMessageConverter" class="org.springframework.jms.support.converter.SimpleMessageConverter" />
+
+	<!-- 定义JmsTemplate的Queue类型 -->
+	<bean id="jmsQueueTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<constructor-arg ref="connectionFactory" />
+		<!-- 非pub/sub模型（发布/订阅），即队列模式 -->
+		<property name="pubSubDomain" value="false" />
+		<property name="messageConverter" ref="jmsMessageConverter" />
+	</bean>
+
+	<!-- 定义JmsTemplate的Topic类型 -->
+	<bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<constructor-arg ref="connectionFactory" />
+		<!-- pub/sub模型（发布/订阅） -->
+		<property name="pubSubDomain" value="true" />
+		<property name="messageConverter" ref="jmsMessageConverter" />
+	</bean>
+
+	<bean id="jmsListenerContainerFactory" class="org.springframework.jms.config.DefaultJmsListenerContainerFactory">
+		<property name="connectionFactory" ref="connectionFactory" />
+	</bean>
+
+	<!-- 监听注解支持 -->
+	<jms:annotation-driven />
+</beans>
