@@ -10,6 +10,7 @@
 		classpath:applicationContext.xml
 		classpath:spring-redis.xml
 		classpath:spring-threadPool.xml
+		classpath:spring-activeMQ.xml
 		</param-value>
 	</context-param>
 
