@@ -1,117 +1,115 @@
 package com.stip.net.service;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
-import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Service;
-
-import com.stip.net.utils.SerializationUtil;
 
 @Service
 public class RedisService {
-	public final static String CAHCENAME = "niitcache";// 缓存名
-	public final static int CAHCETIME = 60;// 默认缓存时间 60S
-	public final static int CAHCEHOUR = 60 * 60;// 默认缓存时间 1hr
-	public final static int CAHCEDAY = 60 * 60 * 24;// 默认缓存时间 1Day
-	public final static int CAHCEWEEK = 60 * 60 * 24 * 7;// 默认缓存时间 1week
-	public final static int CAHCEMONTH = 60 * 60 * 24 * 7 * 30;// 默认缓存时间 1month
-
 	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
-
-	public <T> boolean putCache(String key, T obj) {
-		final byte[] bkey = key.getBytes();
-		final byte[] bvalue = SerializationUtil.serialize(obj);
-		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
-			@Override
-			public Boolean doInRedis(RedisConnection connection)throws DataAccessException {
-				connection.set(bkey, bvalue);
-				return true;
-			}
-		});
-		return result;
+	private RedisTemplate<Serializable, Object> redisTemplate;
+	
+	/**
+	 * 批量删除相应的value
+	 * 
+	 * @param keys
+	 */
+	public void remove(final String... keys) {
+		for (String key : keys) {
+			remove(key);
+		}
 	}
 
-	public <T> void putCacheWithExpireTime(String key, T obj,final long expireTime) {
-		final byte[] bkey = key.getBytes();
-		final byte[] bvalue = SerializationUtil.serialize(obj);
-		redisTemplate.execute(new RedisCallback<Boolean>() {
-			@Override
-			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
-				connection.setEx(bkey, expireTime, bvalue);
-				return true;
-			}
-		});
+	/**
+	 * 批量删除key
+	 * 
+	 * @param pattern
+	 */
+	public void removePattern(final String pattern) {
+		Set<Serializable> keys = redisTemplate.keys(pattern);
+		if (keys.size() > 0)
+			redisTemplate.delete(keys);
 	}
 
-	public <T> boolean putListCache(String key, List<T> objList) {
-		final byte[] bkey = key.getBytes();
-		final byte[] bvalue = SerializationUtil.serialize(objList);
-		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
-			@Override
-			public Boolean doInRedis(RedisConnection connection)throws DataAccessException {
-				return connection.setNX(bkey, bvalue);
-			}
-		});
+	/**
+	 * 删除相应的value
+	 * 
+	 * @param key
+	 */
+	public void remove(final String key) {
+		if (exists(key)) {
+			redisTemplate.delete(key);
+		}
+	}
+
+	/**
+	 * 推断缓存中是否有相应的value
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public boolean exists(final String key) {
+		return redisTemplate.hasKey(key);
+	}
+
+	/**
+	 * 读取缓存
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Object getCache(final String key) {
+		Object result = null;
+		ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+		result = operations.get(key);
 		return result;
 	}
 
 	/**
-	 * 存入缓存并指定过期时间
+	 * 写入缓存
+	 * 
 	 * @param key
-	 * @param objList
-	 * @param expireTime
+	 * @param value
 	 * @return
 	 */
-	public <T> boolean putListCacheWithExpireTime(String key, List<T> objList, final long expireTime) {
-		final byte[] bkey = key.getBytes();
-		final byte[] bvalue = SerializationUtil.serialize(objList);
-		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
-			@Override
-			public Boolean doInRedis(RedisConnection connection)throws DataAccessException {
-				connection.setEx(bkey, expireTime, bvalue);
-				return true;
-			}
-		});
+	public boolean setCache(final String key, Object value) {
+		boolean result = false;
+		try {
+			ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+			operations.set(key, value);
+			result = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return result;
 	}
 
-	public <T> T getCache(final String key, Class<T> cls) {
-		byte[] result = redisTemplate.execute(new RedisCallback<byte[]>() {
-			@Override
-			public byte[] doInRedis(RedisConnection connection) throws DataAccessException {
-				return connection.get(key.getBytes());
-			}
-		});
-		System.out.println(result);
-		if (result == null) {
-			return null;
+	/**
+	 * 写入缓存
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public boolean setCacheExpir(final String key, Object value, Long expireTime) {
+		boolean result = false;
+		try {
+			ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+			operations.set(key, value);
+			redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
+			result = true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return SerializationUtil.deserialize(result,cls);
-	}
-
-	public <T> T getListCache(final String key, Class<T> targetClass) {
-		byte[] result = redisTemplate.execute(new RedisCallback<byte[]>() {
-			@Override
-			public byte[] doInRedis(RedisConnection connection)
-					throws DataAccessException {
-				return connection.get(key.getBytes());
-			}
-		});
-		if (result == null) {
-			return null;
-		}
-		return SerializationUtil.deserialize(result, targetClass);
+		return result;
 	}
 	
 	/**
@@ -119,36 +117,11 @@ public class RedisService {
 	 * 
 	 * @return
 	 */
-	public Long executeScript(String script,List<String> list,String[] args) {
+	public Long executeScript(String script,List<Serializable> list,int args) {
 		RedisScript<Long> redisScript = new DefaultRedisScript<Long>(script, Long.class);
 		Long a = redisTemplate.execute(redisScript, list,args);
 
 		return a;
 	}
-
-	/**
-	 * 精确删除key
-	 * 
-	 * @param key
-	 */
-	public void deleteCache(String key) {
-		redisTemplate.delete(key);
-	}
-
-	/**
-	 * 模糊删除key
-	 * 
-	 * @param pattern
-	 */
-	public void deleteCacheWithPattern(String pattern) {
-		Set<String> keys = redisTemplate.keys(pattern);
-		redisTemplate.delete(keys);
-	}
-
-	/**
-	 * 清空所有缓存
-	 */
-	public void clearCache() {
-		deleteCacheWithPattern(RedisService.CAHCENAME + "|*");
-	}
+	
 }

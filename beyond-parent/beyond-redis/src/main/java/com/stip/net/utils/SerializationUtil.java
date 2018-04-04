@@ -1,15 +1,14 @@
 package com.stip.net.utils;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-import org.springframework.objenesis.Objenesis;
-import org.springframework.objenesis.ObjenesisStd;
-
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.dyuproject.protostuff.Schema;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * 序列化和反序列化工具
@@ -17,47 +16,64 @@ import com.dyuproject.protostuff.runtime.RuntimeSchema;
  *
  */
 public class SerializationUtil {
-	private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
-
-	private static Objenesis objenesis = new ObjenesisStd(true);
-
-	private SerializationUtil() {
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> Schema<T> getSchema(Class<T> cls) {
-		Schema<T> schema = (Schema<T>) cachedSchema.get(cls);
-		if (schema == null) {
-			schema = RuntimeSchema.createFrom(cls);
-			if (schema != null) {
-				cachedSchema.put(cls, schema);
-			}
-		}
-		return schema;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> byte[] serialize(T obj) {
-		Class<T> cls = (Class<T>) obj.getClass();
-		LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
-		try {
-			Schema<T> schema = getSchema(cls);
-			return ProtostuffIOUtil.toByteArray(obj, schema, buffer);
-		} catch (Exception e) {
-			throw new IllegalStateException(e.getMessage(), e);
-		} finally {
-			buffer.clear();
-		}
-	}
-
-	public static <T> T deserialize(byte[] data, Class<T> cls) {
-		try {
-			T message = (T) objenesis.newInstance(cls);
-			Schema<T> schema = getSchema(cls);
-			ProtostuffIOUtil.mergeFrom(data, message, schema);
-			return message;
-		} catch (Exception e) {
-			throw new IllegalStateException(e.getMessage(), e);
-		}
-	}
+	static final Class<?> CLAZZ = SerializationUtil.class;
+	
+	public static Log log = LogFactory.getLog(SerializationUtil.class);
+		
+	    public static byte[] serialize(Object value) {
+	        if (value == null) { 
+	            throw new NullPointerException("Can't serialize null");
+	        }
+	        byte[] rv = null;
+	        ByteArrayOutputStream bos = null;
+	        ObjectOutputStream os = null;
+	        try {
+	            bos = new ByteArrayOutputStream();
+	            os = new ObjectOutputStream(bos);
+	            os.writeObject(value);
+	            os.close();
+	            bos.close();
+	            rv = bos.toByteArray();
+	        } catch (Exception e) {
+	        	log.error(e);
+	        } finally {
+	            close(os);
+	            close(bos);
+	        }
+	        return rv;
+	    }
+	
+	    
+		public static Object deserialize(byte[] in) {
+	        return deserialize(in, Object.class);
+	    }
+	
+	    public static <T> T deserialize(byte[] in, Class...requiredType) {
+	        T rv = null;
+	        ByteArrayInputStream bis = null;
+	        ObjectInputStream is = null;
+	        try {
+	            if (in != null) {
+	                bis = new ByteArrayInputStream(in);
+	                is = new ObjectInputStream(bis);
+	                rv = (T) is.readObject();
+	            }
+	        } catch (Exception e) {
+	        	log.error(e);
+	        } finally {
+	            close(is);
+	            close(bis);
+	        }
+	        return rv;
+	    }
+	
+	    private static void close(Closeable closeable) {
+	        if (closeable != null)
+	            try {
+	                closeable.close();
+	            } catch (IOException e) {
+	            	log.error(e);
+	            }
+	    }
+	
 }
