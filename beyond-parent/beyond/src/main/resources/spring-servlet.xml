@@ -21,24 +21,6 @@
 
 	<!-- 防止jsp等静态资源被拦截 -->
 	<mvc:default-servlet-handler />
-	<mvc:annotation-driven />
-	<task:annotation-driven />
-	<!-- 启用spring mvc 注解 -->
-	<context:annotation-config />
-	<!-- 设置使用注解的类所在的jar包 -->
-	<context:component-scan base-package="com.stip" >
-		<!-- 扫描@Controller -->
-		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
-		<!-- 控制器增强，使一个Contoller成为全局的异常处理类，类中用@ExceptionHandler方法注解的方法可以处理所有Controller发生的异常 -->
-		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice" />
-	</context:component-scan>
-	<!-- 完成请求和注解POJO的映射 -->
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
-	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
 	<!-- 对转向页面的路径解析。prefix：前缀， suffix：后缀 -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/" p:suffix=".jsp" p:order="1" />
-
-	<!-- 启动spring事务注解，事务注解尽在此 -->
-	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
-
 </beans>
