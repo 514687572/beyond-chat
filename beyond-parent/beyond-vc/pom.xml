@@ -7,7 +7,7 @@
     <artifactId>beyond-parent</artifactId>
     <version>1.0</version>
   </parent>
-  <groupId>beyond-cv</groupId>
+  <groupId>com.beyond.net</groupId>
   <artifactId>beyond-cv</artifactId>
   <version>1.0</version>
   <name>beyond-cv</name>
