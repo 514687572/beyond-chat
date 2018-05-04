@@ -7,10 +7,10 @@
     <artifactId>beyond-parent</artifactId>
     <version>1.0</version>
   </parent>
-  <groupId>beyond-vc</groupId>
-  <artifactId>beyond-vc</artifactId>
+  <groupId>beyond-cv</groupId>
+  <artifactId>beyond-cv</artifactId>
   <version>1.0</version>
-  <name>beyond-vc</name>
+  <name>beyond-cv</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
