@@ -265,8 +265,7 @@
 		<module>beyond-chat</module>
 		<module>beyond-redis</module>
 		<module>beyond-activemq</module>
-    	<module>beyond-cv</module>
-    <module>beyond-tensorflow</module>
-    <module>beyond-dl4j</module>
-  </modules>
+		<module>beyond-cv</module>
+		<module>beyond-dl4j</module>
+	</modules>
 </project>
