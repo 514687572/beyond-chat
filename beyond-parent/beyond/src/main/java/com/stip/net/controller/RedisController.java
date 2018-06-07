@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.Resource;
@@ -113,6 +114,28 @@ public class RedisController {
 		});
 	        
 	        return jsonResult;
-	    } 
+	 }
+	
+	@RequestMapping(value = "/testAt.do", method = { RequestMethod.PUT,RequestMethod.GET})
+	public Map<String, Object> testAt(HttpServletRequest request) throws InterruptedException {  
+		final Map<String,Object> jsonResult=new HashMap<String, Object>();
+        final String id=request.getParameter("id");
+        final String count=request.getParameter("count");
+        
+    	threadPoolTaskExecutor.execute(new Runnable() {
+    		public void run() {
+    			SalesRecords record = new SalesRecords();
+    			record.setUserId(new Random().nextInt(10000));
+    			record.setUpdateTime(new Date());
+    			record.setGoodsCount(new Random().nextInt(10)+1);
+    			record.setGoogsId(id);
+    			jmsQueueSender.send("userQueue", record);
+    			
+    			jsonResult.put("result", "购买成功");
+    		}
+    	});
+	        
+        return jsonResult;
+	 } 
 	
 }

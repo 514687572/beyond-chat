@@ -10,6 +10,8 @@ public class BSalesRecords extends BaseModel<Integer> implements Serializable {
     private Integer goodsCount;
 
     private Date updateTime;
+    
+    private String googsId;
 
     private static final long serialVersionUID = 1L;
 
@@ -73,4 +75,14 @@ public class BSalesRecords extends BaseModel<Integer> implements Serializable {
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
         return result;
     }
+
+	public String getGoogsId() {
+		return googsId;
+	}
+
+	public void setGoogsId(String googsId) {
+		this.googsId = googsId;
+	}
+    
+    
 }

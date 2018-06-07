@@ -12,27 +12,31 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.stip.net.pojo.GoodsRecords;
+import com.stip.net.entity.SalesRecords;
 import com.stip.net.service.impl.GoodsService;
 
 @Component
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = { RuntimeException.class, Exception.class })
-public class GoodsQueueListener extends MessageListenerAdapter{
+public class UserQueueListener extends MessageListenerAdapter{
 	@Resource
 	private GoodsService goodsService;
 	@Resource
 	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+	
+	private static final String SALES_RECORDS_QUEUE = "userQueue";
 	 
-	private static final String GOODS_RECORDS_QUEUE = "storageQueue";
-	 
-	@JmsListener(destination=GOODS_RECORDS_QUEUE)
+	@JmsListener(destination=SALES_RECORDS_QUEUE)
     public void onMessage(final Message message) {  
-		threadPoolTaskExecutor.execute(new Runnable() {  
+    	threadPoolTaskExecutor.execute(new Runnable() {  
             public void run() {   
             	try {
-            		GoodsRecords record = (GoodsRecords) getMessageConverter().fromMessage(message);
-            		final int allaCount=goodsService.getGoodsById(record.getGoodsId());
-            		goodsService.updateGoodsCount(allaCount-record.getCount(), record.getGoodsId());
+            		SalesRecords record = (SalesRecords) getMessageConverter().fromMessage(message);
+            		final int allaCount=goodsService.getGoodsById(Long.parseLong(record.getGoogsId()));
+            		
+            		if(allaCount>=record.getGoodsCount()) {
+            			goodsService.updateGoodsCount(allaCount-record.getGoodsCount(),Long.parseLong(record.getGoogsId()));
+            			goodsService.addRecords(record);
+            		}
             		message.acknowledge();
             	} catch (MessageConversionException e) {
             		e.printStackTrace();
@@ -40,7 +44,6 @@ public class GoodsQueueListener extends MessageListenerAdapter{
             		e.printStackTrace();
             	} 
             }  
-        });
-    	
+        }); 
     }
 }
