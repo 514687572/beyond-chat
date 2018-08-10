@@ -34,6 +34,7 @@
 	<bean id="connectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
 		<property name="connectionFactory" ref="activeMQConnectionFactory"/>
 		<property name="maxConnections" value="1000" />
+		<property name="maximumActiveSessionPerConnection" value="1000" />
 	</bean>
 
 	<!-- 消息处理器 -->

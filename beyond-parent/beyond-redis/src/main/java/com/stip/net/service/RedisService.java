@@ -72,7 +72,7 @@ public class RedisService {
 		result = operations.get(key);
 		return result;
 	}
-
+	
 	/**
 	 * 写入缓存
 	 * 

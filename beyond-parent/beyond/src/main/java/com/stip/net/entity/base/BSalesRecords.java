@@ -11,7 +11,7 @@ public class BSalesRecords extends BaseModel<Integer> implements Serializable {
 
     private Date updateTime;
     
-    private String googsId;
+    private String goodsId;
 
     private static final long serialVersionUID = 1L;
 
@@ -47,6 +47,7 @@ public class BSalesRecords extends BaseModel<Integer> implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", userId=").append(userId);
         sb.append(", goodsCount=").append(goodsCount);
+        sb.append(", goodsId=").append(goodsId);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
@@ -76,12 +77,12 @@ public class BSalesRecords extends BaseModel<Integer> implements Serializable {
         return result;
     }
 
-	public String getGoogsId() {
-		return googsId;
+	public String getGoodsId() {
+		return goodsId;
 	}
 
-	public void setGoogsId(String googsId) {
-		this.googsId = googsId;
+	public void setGoodsId(String goodsId) {
+		this.goodsId = goodsId;
 	}
     
     

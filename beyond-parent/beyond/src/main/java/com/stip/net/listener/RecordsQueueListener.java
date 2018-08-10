@@ -25,7 +25,7 @@ public class RecordsQueueListener extends MessageListenerAdapter{
 	
 	private static final String SALES_RECORDS_QUEUE = "recordsQueue";
 	 
-	@JmsListener(destination=SALES_RECORDS_QUEUE)
+	@JmsListener(destination=SALES_RECORDS_QUEUE,concurrency="5-10")
     public void onMessage(final Message message) {  
     	threadPoolTaskExecutor.execute(new Runnable() {  
             public void run() {   

@@ -12,10 +12,12 @@ import java.util.concurrent.CountDownLatch;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +46,7 @@ public class RedisController {
 	private static int threadCount = 1;
 	private volatile long a=100;
 	
-	@RequestMapping(value = "/test.do", method = { RequestMethod.PUT,RequestMethod.GET})
+	@GetMapping("/test.do")
 	public Map<String, Object> seckill(HttpServletRequest request) throws InterruptedException {  
 		final Map<String,Object> jsonResult=new HashMap<String, Object>();
         final CountDownLatch latch = new CountDownLatch(threadCount);  
@@ -86,56 +88,50 @@ public class RedisController {
 	        
 		threadPoolTaskExecutor.execute(new Runnable() {
 			public void run() {
-				final int currentCount = Integer.parseInt(redisService.getCache("storage_seckill") + "");
 				if (a >= 0) {
 					SalesRecords record = new SalesRecords();
 					record.setUserId(Integer.parseInt(id));
 					record.setUpdateTime(new Date());
 					record.setGoodsCount(Integer.parseInt(count));
 					jmsQueueSender.send("recordsQueue", record);
-
-					if (a == 1) {
-						GoodsRecords records = new GoodsRecords();
-						records.setCount(currentCount);
-						records.setGoodsId(1000);
-						jmsQueueSender.send("storageQueue", records);
-					}
+					
 					jsonResult.put("result", "购买成功");
 				} else {
-					if (a == -2) {
-						GoodsRecords records = new GoodsRecords();
-						records.setCount(currentCount);
-						records.setGoodsId(1000);
-						jmsQueueSender.send("storageQueue", records);
-					}
 					jsonResult.put("result", "秒杀完了");
 				}
 			}
 		});
 	        
-	        return jsonResult;
+	   return jsonResult;
 	 }
 	
-	@RequestMapping(value = "/testAt.do", method = { RequestMethod.PUT,RequestMethod.GET})
-	public Map<String, Object> testAt(HttpServletRequest request) throws InterruptedException {  
+	@GetMapping("/testAt.do")
+	public Map<String, Object> testAt(final HttpServletRequest request) throws InterruptedException {  
 		final Map<String,Object> jsonResult=new HashMap<String, Object>();
-        final String id=request.getParameter("id");
-        final String count=request.getParameter("count");
-        
-    	threadPoolTaskExecutor.execute(new Runnable() {
-    		public void run() {
-    			SalesRecords record = new SalesRecords();
-    			record.setUserId(new Random().nextInt(10000));
-    			record.setUpdateTime(new Date());
-    			record.setGoodsCount(new Random().nextInt(10)+1);
-    			record.setGoogsId(id);
-    			jmsQueueSender.send("userQueue", record);
-    			
-    			jsonResult.put("result", "购买成功");
-    		}
-    	});
+		final String id=request.getParameter("id");
+		final String count=request.getParameter("count");
+		final String userId=request.getParameter("userId");
+		
+		threadPoolTaskExecutor.execute(new Runnable() {
+			public void run() {
+				try {
+					SalesRecords record = new SalesRecords();
+					record.setUserId(Integer.parseInt(userId));
+					record.setUpdateTime(new Date());
+					record.setGoodsCount(Integer.parseInt(count));
+					record.setGoodsId(id);
+					jmsQueueSender.send("userQueue", record);
+
+					jsonResult.put("result", "购买成功");
+				} catch (Exception e) {
+					jsonResult.put("result", "购买失败");
+					System.out.println(e+"------------------------------------->>>>问题少年");
+				}
+				
+			}
+		});
 	        
-        return jsonResult;
+		return jsonResult;
 	 } 
 	
 }

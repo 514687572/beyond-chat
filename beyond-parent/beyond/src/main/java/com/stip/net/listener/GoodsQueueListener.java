@@ -25,14 +25,13 @@ public class GoodsQueueListener extends MessageListenerAdapter{
 	 
 	private static final String GOODS_RECORDS_QUEUE = "storageQueue";
 	 
-	@JmsListener(destination=GOODS_RECORDS_QUEUE)
+	@JmsListener(destination=GOODS_RECORDS_QUEUE,concurrency="5-10")
     public void onMessage(final Message message) {  
 		threadPoolTaskExecutor.execute(new Runnable() {  
             public void run() {   
             	try {
             		GoodsRecords record = (GoodsRecords) getMessageConverter().fromMessage(message);
-            		final int allaCount=goodsService.getGoodsById(record.getGoodsId());
-            		goodsService.updateGoodsCount(allaCount-record.getCount(), record.getGoodsId());
+            		updateGoodsCount(record);
             		message.acknowledge();
             	} catch (MessageConversionException e) {
             		e.printStackTrace();
@@ -43,4 +42,9 @@ public class GoodsQueueListener extends MessageListenerAdapter{
         });
     	
     }
+	
+	public synchronized void updateGoodsCount(GoodsRecords record) {
+		int allaCount=goodsService.getGoodsById(record.getGoodsId());
+		goodsService.updateGoodsCount(allaCount-record.getCount(), record.getGoodsId());
+	}
 }

@@ -25,25 +25,28 @@ public class UserQueueListener extends MessageListenerAdapter{
 	
 	private static final String SALES_RECORDS_QUEUE = "userQueue";
 	 
-	@JmsListener(destination=SALES_RECORDS_QUEUE)
-    public void onMessage(final Message message) {  
-    	threadPoolTaskExecutor.execute(new Runnable() {  
-            public void run() {   
-            	try {
-            		SalesRecords record = (SalesRecords) getMessageConverter().fromMessage(message);
-            		final int allaCount=goodsService.getGoodsById(Long.parseLong(record.getGoogsId()));
-            		
-            		if(allaCount>=record.getGoodsCount()) {
-            			goodsService.updateGoodsCount(allaCount-record.getGoodsCount(),Long.parseLong(record.getGoogsId()));
-            			goodsService.addRecords(record);
-            		}
-            		message.acknowledge();
-            	} catch (MessageConversionException e) {
-            		e.printStackTrace();
-            	} catch (JMSException e) {
-            		e.printStackTrace();
-            	} 
-            }  
-        }); 
-    }
+	@JmsListener(destination = SALES_RECORDS_QUEUE,concurrency="5-10")
+	public void onMessage(final Message message) {
+		try {
+			SalesRecords record = (SalesRecords) getMessageConverter().fromMessage(message);
+			saleGoods(record);
+			message.acknowledge();
+		} catch (MessageConversionException e) {
+			e.printStackTrace();
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public synchronized void saleGoods(SalesRecords record) {
+		int allaCount = goodsService.getGoodsById(Long.parseLong(record.getGoodsId()));
+		System.out.println(allaCount+"------------------------------------->>>>");
+		if (allaCount >= record.getGoodsCount()) {
+			goodsService.updateGoodsCount(allaCount - record.getGoodsCount(), Long.parseLong(record.getGoodsId()));
+			goodsService.addRecords(record);
+		}else {
+			System.out.println(allaCount - record.getGoodsCount()+"------------------------------------->>>>问题少年");
+		}
+	}
+	
 }
