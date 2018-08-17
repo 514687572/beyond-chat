@@ -6,10 +6,13 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -152,9 +155,52 @@ public class RedisService<T> {
 			throw new RuntimeException("递减因子必须大于0");
 		}
 		
-		redisTemplate.opsForValue().increment(key,-1);
+		redisTemplate.opsForValue().increment(key,-delta);
 		
 		return 1;
+	}
+	
+	/**
+	 * 如果key值不存在则设置值为value并返回true
+	 * 已存在和其他异常情况返回NULL
+	 * @param key
+	 * @param value
+	 * @param expireTime
+	 * @return
+	 */
+    public Boolean setnx(String key, T value,Long expireTime) {  
+        try {  
+        	ValueOperations<Serializable, T> operations = redisTemplate.opsForValue();
+        	boolean result=operations.setIfAbsent(key, value); 
+        	
+        	if(result) {
+        		redisTemplate.expire(key, expireTime, TimeUnit.MILLISECONDS);
+        	}
+        	
+            return operations.setIfAbsent(key, value);  
+        } catch (Exception e) {  
+            return null;  
+        }  
+    } 
+    
+    /**
+     * 根据批量key返回批量值
+     * @param keys
+     * @return
+     */
+	public List<T> getKeys(final List<String> keys) {
+		List<T> valueList = (List<T>) redisTemplate.executePipelined(new RedisCallback<T>() {
+			public T doInRedis(RedisConnection conn) {
+				ValueOperations<Serializable, T> operations = redisTemplate.opsForValue();
+				for (String key : keys) {
+					return operations.get(key);
+				}
+				
+				return null;
+			}
+		});
+
+		return valueList;
 	}
 	
 }
