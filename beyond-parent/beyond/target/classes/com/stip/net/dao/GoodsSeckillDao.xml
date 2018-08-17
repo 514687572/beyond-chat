@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.GoodsSeckillDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.GoodsSeckill">
+    <id column="goodsSeckill_seckill_id" jdbcType="BIGINT" property="seckillId" />
+    <result column="goodsSeckill_name" jdbcType="VARCHAR" property="name" />
+    <result column="goodsSeckill_number" jdbcType="INTEGER" property="number" />
+    <result column="goodsSeckill_create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="goodsSeckill_start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="goodsSeckill_end_time" jdbcType="TIMESTAMP" property="endTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    goodsSeckill.seckill_id as goodsSeckill_seckill_id, goodsSeckill.name as goodsSeckill_name, 
+    goodsSeckill.number as goodsSeckill_number, goodsSeckill.create_time as goodsSeckill_create_time, 
+    goodsSeckill.start_time as goodsSeckill_start_time, goodsSeckill.end_time as goodsSeckill_end_time
+  </sql>
+  <select id="selectByExample" parameterType="com.stip.net.entity.GoodsSeckillExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from goods_seckill goodsSeckill
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="fromRowNum != null and toRowNum >= 0">
+      limit #{fromRowNum}, #{toRowNum}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from goods_seckill goodsSeckill
+    where goodsSeckill.seckill_id = #{seckillId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from goods_seckill
+    where seckill_id = #{seckillId,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.stip.net.entity.GoodsSeckillExample">
+    delete from goods_seckill goodsSeckill
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.stip.net.entity.GoodsSeckill">
+    insert into goods_seckill (seckill_id, name, number, 
+      create_time, start_time, end_time
+      )
+    values (#{seckillId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{number,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.stip.net.entity.GoodsSeckill">
+    insert into goods_seckill
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="seckillId != null">
+        seckill_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="number != null">
+        number,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="seckillId != null">
+        #{seckillId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null">
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.stip.net.entity.GoodsSeckillExample" resultType="java.lang.Long">
+    select count(*) from goods_seckill goodsSeckill
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update goods_seckill goodsSeckill
+    <set>
+      <if test="record.seckillId != null">
+        goodsSeckill.seckill_id = #{record.seckillId,jdbcType=BIGINT},
+      </if>
+      <if test="record.name != null">
+        goodsSeckill.name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.number != null">
+        goodsSeckill.number = #{record.number,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null">
+        goodsSeckill.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.startTime != null">
+        goodsSeckill.start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endTime != null">
+        goodsSeckill.end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update goods_seckill goodsSeckill
+    set goodsSeckill.seckill_id = #{record.seckillId,jdbcType=BIGINT},
+      goodsSeckill.name = #{record.name,jdbcType=VARCHAR},
+      goodsSeckill.number = #{record.number,jdbcType=INTEGER},
+      goodsSeckill.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      goodsSeckill.start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      goodsSeckill.end_time = #{record.endTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.GoodsSeckill">
+    update goods_seckill
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        number = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where seckill_id = #{seckillId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.GoodsSeckill">
+    update goods_seckill
+    set name = #{name,jdbcType=VARCHAR},
+      number = #{number,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP}
+    where seckill_id = #{seckillId,jdbcType=BIGINT}
+  </update>
+</mapper>

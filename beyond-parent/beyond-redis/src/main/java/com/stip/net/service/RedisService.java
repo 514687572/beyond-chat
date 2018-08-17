@@ -13,9 +13,9 @@ import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RedisService {
+public class RedisService<T> {
 	@Autowired
-	private RedisTemplate<Serializable, Object> redisTemplate;
+	private RedisTemplate<Serializable, T> redisTemplate;
 	
 	/**
 	 * 批量删除相应的value
@@ -66,10 +66,11 @@ public class RedisService {
 	 * @param key
 	 * @return
 	 */
-	public Object getCache(final String key) {
-		Object result = null;
-		ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+	public T getCache(final String key) {
+		T result = null;
+		ValueOperations<Serializable, T> operations = redisTemplate.opsForValue();
 		result = operations.get(key);
+		
 		return result;
 	}
 	
@@ -80,10 +81,10 @@ public class RedisService {
 	 * @param value
 	 * @return
 	 */
-	public boolean setCache(final String key, Object value) {
+	public boolean setCache(final String key, T value) {
 		boolean result = false;
 		try {
-			ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+			ValueOperations<Serializable, T> operations = redisTemplate.opsForValue();
 			operations.set(key, value);
 			result = true;
 		} catch (Exception e) {
@@ -99,10 +100,10 @@ public class RedisService {
 	 * @param value
 	 * @return
 	 */
-	public boolean setCacheExpir(final String key, Object value, Long expireTime) {
+	public boolean setCacheExpir(final String key, T value, Long expireTime) {
 		boolean result = false;
 		try {
-			ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+			ValueOperations<Serializable, T> operations = redisTemplate.opsForValue();
 			operations.set(key, value);
 			redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
 			result = true;
@@ -122,6 +123,38 @@ public class RedisService {
 		Long a = redisTemplate.execute(redisScript, list,args);
 
 		return a;
+	}
+	
+	/**
+	 * 递增
+	 * 
+	 * @param key键
+	 * @param by要增加几(大于0)
+	 * @return
+	 */
+	public long incr(String key, long delta) {
+		if (delta < 0) {
+			throw new RuntimeException("递增因子必须大于0");
+		}
+		
+		return redisTemplate.opsForValue().increment(key, delta);
+	}
+
+	/**
+	 * 递减
+	 * 
+	 * @param key键
+	 * @param by要减少几(小于0)
+	 * @return
+	 */
+	public long decr(String key, long delta) {
+		if (delta < 0) {
+			throw new RuntimeException("递减因子必须大于0");
+		}
+		
+		redisTemplate.opsForValue().increment(key,-1);
+		
+		return 1;
 	}
 	
 }

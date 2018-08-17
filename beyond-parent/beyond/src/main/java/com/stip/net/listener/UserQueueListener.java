@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.stip.net.entity.SalesRecords;
+import com.stip.net.service.RedisService;
 import com.stip.net.service.impl.GoodsService;
 
 @Component
@@ -20,6 +21,8 @@ import com.stip.net.service.impl.GoodsService;
 public class UserQueueListener extends MessageListenerAdapter{
 	@Resource
 	private GoodsService goodsService;
+	@Resource
+	private RedisService<Integer> redisService;
 	@Resource
 	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 	
@@ -39,10 +42,11 @@ public class UserQueueListener extends MessageListenerAdapter{
 	}
 	
 	public synchronized void saleGoods(SalesRecords record) {
-		int allaCount = goodsService.getGoodsById(Long.parseLong(record.getGoodsId()));
+		int allaCount = redisService.getCache("storage_seckill");
 		System.out.println(allaCount+"------------------------------------->>>>");
 		if (allaCount >= record.getGoodsCount()) {
-			goodsService.updateGoodsCount(allaCount - record.getGoodsCount(), Long.parseLong(record.getGoodsId()));
+			redisService.decr("storage_seckill", 1L);
+			//goodsService.updateGoodsCount(allaCount - record.getGoodsCount(), Long.parseLong(record.getGoodsId()));
 			goodsService.addRecords(record);
 		}else {
 			System.out.println(allaCount - record.getGoodsCount()+"------------------------------------->>>>问题少年");

@@ -106,11 +106,16 @@ public class RedisController {
 	 }
 	
 	@GetMapping("/testAt.do")
-	public Map<String, Object> testAt(final HttpServletRequest request) throws InterruptedException {  
+	public Map<String, Object> testAt(HttpServletRequest request) throws InterruptedException {  
 		final Map<String,Object> jsonResult=new HashMap<String, Object>();
 		final String id=request.getParameter("id");
 		final String count=request.getParameter("count");
 		final String userId=request.getParameter("userId");
+		
+		if(!redisService.exists("storage_seckill")) {
+			int allaCount = goodsService.getGoodsById(Long.parseLong(id));
+			redisService.setCache("storage_seckill", allaCount);
+		}
 		
 		threadPoolTaskExecutor.execute(new Runnable() {
 			public void run() {
@@ -132,6 +137,6 @@ public class RedisController {
 		});
 	        
 		return jsonResult;
-	 } 
+	 }
 	
 }
