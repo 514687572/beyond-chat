@@ -11,6 +11,7 @@ import com.stip.net.dao.SalesRecordsDao;
 import com.stip.net.entity.GoodsSeckill;
 import com.stip.net.entity.GoodsSeckillExample;
 import com.stip.net.entity.SalesRecords;
+import com.stip.net.service.RedisService;
 
 @Service
 public class GoodsService {
@@ -18,6 +19,8 @@ public class GoodsService {
 	private GoodsSeckillDao goodsSeckillDao;
 	@Resource
 	private SalesRecordsDao salesRecordsDao;
+	@Resource
+	private RedisService  redisService;
 	
 	public void updateGoodsCount(long count,long id) {
 		GoodsSeckill record=goodsSeckillDao.selectByPrimaryKey(id);

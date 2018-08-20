@@ -139,4 +139,13 @@ public class RedisController {
 		return jsonResult;
 	 }
 	
+	@GetMapping("/testSetNx.do")
+	public Map<String, Object> testSetNx(HttpServletRequest request) throws InterruptedException {  
+		final Map<String,Object> jsonResult=new HashMap<String, Object>();
+		Boolean a=redisService.setNx(String.valueOf(100000), "exist", 3000L);
+		System.out.println(a);
+	        
+		return jsonResult;
+	 }
+	
 }

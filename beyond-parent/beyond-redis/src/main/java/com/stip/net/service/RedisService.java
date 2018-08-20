@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,9 +17,9 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RedisService<T> {
+public class RedisService {
 	@Autowired
-	private RedisTemplate<Serializable, T> redisTemplate;
+	private RedisTemplate<Serializable,Object> redisTemplate;
 	
 	/**
 	 * 批量删除相应的value
@@ -69,9 +70,9 @@ public class RedisService<T> {
 	 * @param key
 	 * @return
 	 */
-	public T getCache(final String key) {
-		T result = null;
-		ValueOperations<Serializable, T> operations = redisTemplate.opsForValue();
+	public Object getCache(final String key) {
+		Object result = null;
+		ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
 		result = operations.get(key);
 		
 		return result;
@@ -84,10 +85,10 @@ public class RedisService<T> {
 	 * @param value
 	 * @return
 	 */
-	public boolean setCache(final String key, T value) {
+	public boolean setCache(final String key, Object value) {
 		boolean result = false;
 		try {
-			ValueOperations<Serializable, T> operations = redisTemplate.opsForValue();
+			ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
 			operations.set(key, value);
 			result = true;
 		} catch (Exception e) {
@@ -103,10 +104,10 @@ public class RedisService<T> {
 	 * @param value
 	 * @return
 	 */
-	public boolean setCacheExpir(final String key, T value, Long expireTime) {
+	public boolean setCacheExpir(final String key, Object value, Long expireTime) {
 		boolean result = false;
 		try {
-			ValueOperations<Serializable, T> operations = redisTemplate.opsForValue();
+			ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
 			operations.set(key, value);
 			redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
 			result = true;
@@ -161,37 +162,60 @@ public class RedisService<T> {
 	}
 	
 	/**
-	 * 如果key值不存在则设置值为value并返回true
-	 * 已存在和其他异常情况返回NULL
+	 * 如果key值不存在则设置值为value并返回true 已存在和其他异常情况返回NULL
+	 * 
 	 * @param key
 	 * @param value
 	 * @param expireTime
 	 * @return
 	 */
-    public Boolean setnx(String key, T value,Long expireTime) {  
-        try {  
-        	ValueOperations<Serializable, T> operations = redisTemplate.opsForValue();
-        	boolean result=operations.setIfAbsent(key, value); 
-        	
-        	if(result) {
-        		redisTemplate.expire(key, expireTime, TimeUnit.MILLISECONDS);
-        	}
-        	
-            return operations.setIfAbsent(key, value);  
-        } catch (Exception e) {  
-            return null;  
-        }  
-    } 
+	public Boolean setNx(final String key, final String value, final Long expireTime) {
+		Boolean result=redisTemplate.execute(new RedisCallback<Boolean>() {
+			public Boolean doInRedis(RedisConnection redisConnection) throws DataAccessException {
+				// 定义序列化方式
+				RedisSerializer<String> serializer = redisTemplate.getStringSerializer();
+				byte[] skey = serializer.serialize(key);
+				byte[] svalue = serializer.serialize(value);
+				Boolean flag = redisConnection.setNX(skey, svalue);
+				
+				if(flag) {
+					redisTemplate.expire(key, expireTime, TimeUnit.MILLISECONDS);
+				}
+
+				return flag;
+			}
+		});
+		
+		return result;
+	}
+	
+	/**
+	 * 如果key值不存在则设置值为value并返回true 已存在和其他异常情况返回NULL
+	 * 
+	 * @param key
+	 * @param value
+	 * @param expireTime
+	 * @return
+	 */
+	public Boolean setNx(final String key, final String value, final Long expireTime,TimeUnit unit) {
+		Boolean result=redisTemplate.opsForValue().setIfAbsent(key, value);
+		
+		if(result) {
+			redisTemplate.expire(key, expireTime,unit);
+		}
+		
+		return result;
+	}
     
     /**
      * 根据批量key返回批量值
      * @param keys
      * @return
      */
-	public List<T> getKeys(final List<String> keys) {
-		List<T> valueList = (List<T>) redisTemplate.executePipelined(new RedisCallback<T>() {
-			public T doInRedis(RedisConnection conn) {
-				ValueOperations<Serializable, T> operations = redisTemplate.opsForValue();
+	public List<Object> getKeys(final List<String> keys) {
+		List<Object> valueList = (List<Object>) redisTemplate.executePipelined(new RedisCallback<Object>() {
+			public Object doInRedis(RedisConnection conn) {
+				ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
 				for (String key : keys) {
 					return operations.get(key);
 				}

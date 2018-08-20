@@ -46,7 +46,7 @@
 		<property name="hashValueSerializer">
 			<bean class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer" />
 		</property>
-		<property name="enableTransactionSupport" value="true"></property>
+		<property name="enableTransactionSupport" value="false"></property>
 	</bean>
 
 </beans>

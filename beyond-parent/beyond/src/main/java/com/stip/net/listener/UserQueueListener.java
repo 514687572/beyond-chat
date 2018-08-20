@@ -1,5 +1,7 @@
 package com.stip.net.listener;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Resource;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -22,7 +24,7 @@ public class UserQueueListener extends MessageListenerAdapter{
 	@Resource
 	private GoodsService goodsService;
 	@Resource
-	private RedisService<Integer> redisService;
+	private RedisService redisService;
 	@Resource
 	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 	
@@ -41,15 +43,26 @@ public class UserQueueListener extends MessageListenerAdapter{
 		}
 	}
 	
-	public synchronized void saleGoods(SalesRecords record) {
-		int allaCount = redisService.getCache("storage_seckill");
-		System.out.println(allaCount+"------------------------------------->>>>");
-		if (allaCount >= record.getGoodsCount()) {
-			redisService.decr("storage_seckill", 1L);
-			//goodsService.updateGoodsCount(allaCount - record.getGoodsCount(), Long.parseLong(record.getGoodsId()));
-			goodsService.addRecords(record);
-		}else {
-			System.out.println(allaCount - record.getGoodsCount()+"------------------------------------->>>>问题少年");
+	/**
+	 * 减库存，增加销售记录
+	 * @param record
+	 */
+	public void saleGoods(SalesRecords record) {
+		StringBuffer sb = new StringBuffer("storage_seckill");
+		sb.append(record.getGoodsId().toString());
+		
+		int allaCount =Integer.valueOf(String.valueOf(redisService.getCache(sb.toString())));
+
+		if (redisService.setNx(String.valueOf(record.getGoodsId()), "exist", 3000L,TimeUnit.MILLISECONDS)) {
+			if (allaCount >= record.getGoodsCount()) {
+				redisService.decr(sb.toString(), 1L);
+				goodsService.updateGoodsCount(allaCount - record.getGoodsCount(),Long.valueOf(record.getGoodsId()));
+				goodsService.addRecords(record);
+			} else {
+				System.out.println(allaCount - record.getGoodsCount() + "------------------------------------->>>>问题少年2");
+			}
+			
+			redisService.remove(record.getGoodsId());
 		}
 	}
 	
