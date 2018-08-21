@@ -1,6 +1,7 @@
 package com.stip.net.service;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -26,10 +27,8 @@ public class RedisService {
 	 * 
 	 * @param keys
 	 */
-	public void remove(final String... keys) {
-		for (String key : keys) {
-			remove(key);
-		}
+	public void remove(Collection<Serializable> keys) {
+		redisTemplate.delete(keys);
 	}
 
 	/**

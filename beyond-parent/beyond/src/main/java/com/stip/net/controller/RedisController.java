@@ -6,25 +6,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.Validate;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.stip.net.entity.SalesRecords;
-import com.stip.net.pojo.GoodsRecords;
-import com.stip.net.pojo.GoodsSalesRecords;
 import com.stip.net.queue.JmsQueueSender;
 import com.stip.net.service.RedisService;
 import com.stip.net.service.impl.GoodsService;
@@ -112,11 +107,6 @@ public class RedisController {
 		final String count=request.getParameter("count");
 		final String userId=request.getParameter("userId");
 		
-		if(!redisService.exists("storage_seckill")) {
-			int allaCount = goodsService.getGoodsById(Long.parseLong(id));
-			redisService.setCache("storage_seckill", allaCount);
-		}
-		
 		threadPoolTaskExecutor.execute(new Runnable() {
 			public void run() {
 				try {
@@ -135,15 +125,6 @@ public class RedisController {
 				
 			}
 		});
-	        
-		return jsonResult;
-	 }
-	
-	@GetMapping("/testSetNx.do")
-	public Map<String, Object> testSetNx(HttpServletRequest request) throws InterruptedException {  
-		final Map<String,Object> jsonResult=new HashMap<String, Object>();
-		Boolean a=redisService.setNx(String.valueOf(100000), "exist", 3000L);
-		System.out.println(a);
 	        
 		return jsonResult;
 	 }
